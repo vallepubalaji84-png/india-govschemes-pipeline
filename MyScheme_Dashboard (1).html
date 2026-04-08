@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MyScheme India — Government Schemes Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
+body{background:#0f1923;color:#e8ecf0;min-height:100vh}
+.nav{background:#1a2840;padding:0 24px;display:flex;align-items:center;gap:0;border-bottom:2px solid #2e75b6;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.nav-brand{color:#fff;font-size:17px;font-weight:800;padding:14px 0;margin-right:28px;white-space:nowrap;letter-spacing:.5px}
+.nav-brand span{color:#4fc3f7}
+.tab{padding:14px 18px;cursor:pointer;color:#8fa4bb;font-size:13px;font-weight:600;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
+.tab:hover{color:#fff;background:rgba(78,145,201,.12)}
+.tab.active{color:#4fc3f7;border-bottom-color:#4fc3f7}
+.page{display:none;padding:22px;max-width:1400px;margin:0 auto}
+.page.active{display:block;animation:fi .3s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+.kpi{background:linear-gradient(135deg,#1e3254,#243b5a);border:1px solid #2e4a73;border-radius:12px;padding:16px;text-align:center}
+.kpi .label{color:#8fa4bb;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
+.kpi .value{color:#4fc3f7;font-size:26px;font-weight:800;line-height:1}
+.kpi .sub{color:#6fa8c9;font-size:11px;margin-top:5px}
+.stl{font-size:13px;font-weight:700;color:#b0c4d8;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #1f3352}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px}
+.g6040{display:grid;grid-template-columns:60% 39%;gap:18px;margin-bottom:18px}
+.g4060{display:grid;grid-template-columns:40% 59%;gap:18px;margin-bottom:18px}
+@media(max-width:860px){.g2,.g3,.g6040,.g4060{grid-template-columns:1fr}}
+.card{background:#162135;border:1px solid #1f3352;border-radius:12px;padding:16px}
+.cw{position:relative;width:100%}
+.tw{overflow-x:auto;max-height:440px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:#1a3050;color:#7ab5d8;font-weight:700;padding:8px 9px;text-align:center;position:sticky;top:0;z-index:2;white-space:nowrap}
+td{padding:7px 9px;border-bottom:1px solid #1a2a40;text-align:center}
+tr:nth-child(even) td{background:#101e2e}
+tr:hover td{background:#1a2f48;color:#fff}
+td.left{text-align:left}
+.slr{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.slr label{color:#8fa4bb;font-size:13px;font-weight:600}
+select{background:#1a2840;color:#e0eaf4;border:1px solid #2e4a73;border-radius:7px;padding:7px 12px;font-size:13px;cursor:pointer;min-width:200px}
+select:focus{outline:2px solid #2e75b6;border-color:#2e75b6}
+.bdg{display:inline-block;padding:2px 7px;border-radius:9px;font-size:11px;font-weight:700}
+.bdg-b{background:#1a3a6a;color:#4fc3f7}
+.bdg-g{background:#0d3324;color:#4caf7d}
+.bdg-o{background:#3a2510;color:#ff9a3c}
+.r1{color:#ffd700;font-weight:800}
+.r2{color:#c0c0c0;font-weight:700}
+.r3{color:#cd7f32;font-weight:700}
+.bb{background:#1a2f48;border-radius:3px;height:5px;margin-top:3px}
+.bf{background:#2e75b6;border-radius:3px;height:5px}
+.ig{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.ip{background:#1a2840;border-left:4px solid #2e75b6;border-radius:8px;padding:12px 14px}
+.ip .il{font-size:10px;color:#8fa4bb;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.ip .iv{font-size:20px;font-weight:800;color:#4fc3f7;margin:3px 0}
+.ip .is{font-size:11px;color:#6fa8c9}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">My<span>Scheme</span> India</div>
+  <div class="tab active" onclick="showPage('p1',this)">🏛️ National Overview</div>
+  <div class="tab" onclick="showPage('p2',this)">📊 State Drill-Down</div>
+  <div class="tab" onclick="showPage('p3',this)">🏆 Rankings</div>
+  <div class="tab" onclick="showPage('p4',this)">💡 Insights</div>
+</nav>
+
+<!-- PAGE 1 -->
+<div id="p1" class="page active">
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">Total Schemes</div><div class="value">4,680</div><div class="sub">All States &amp; UTs</div></div>
+    <div class="kpi"><div class="label">Central Schemes</div><div class="value">660</div><div class="sub">14% of total</div></div>
+    <div class="kpi"><div class="label">State Schemes</div><div class="value">4,020</div><div class="sub">86% of total</div></div>
+    <div class="kpi"><div class="label">Online Apply</div><div class="value">1,210</div><div class="sub">+64 via CSC centres</div></div>
+    <div class="kpi"><div class="label">States / UTs</div><div class="value">45</div><div class="sub">Complete coverage</div></div>
+  </div>
+  <div class="g6040">
+    <div class="card"><div class="stl">Top Scheme Categories — National</div><div class="cw" style="height:340px"><canvas id="c_natcat"></canvas></div></div>
+    <div class="card">
+      <div class="stl">Central vs State Schemes</div><div class="cw" style="height:148px"><canvas id="c_central"></canvas></div>
+      <div class="stl" style="margin-top:16px">Application Mode Mix</div><div class="cw" style="height:148px"><canvas id="c_mode"></canvas></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="stl">Gender Targeting (National)</div><div class="cw" style="height:230px"><canvas id="c_gender"></canvas></div></div>
+    <div class="card"><div class="stl">Top 10 States by Total Schemes</div><div class="cw" style="height:230px"><canvas id="c_top10"></canvas></div></div>
+  </div>
+</div>
+
+<!-- PAGE 2 -->
+<div id="p2" class="page">
+  <div class="slr"><label>Select State / UT:</label><select id="stateSel" onchange="drillRender()"></select></div>
+  <div class="kpi-row" id="drillKPIs"></div>
+  <div class="g6040">
+    <div class="card"><div class="stl">Category Breakdown</div><div class="cw" style="height:320px"><canvas id="c_dcat"></canvas></div></div>
+    <div class="card">
+      <div class="stl">Gender Targeting</div><div class="cw" style="height:145px"><canvas id="c_dgender"></canvas></div>
+      <div class="stl" style="margin-top:14px">Application Mode</div><div class="cw" style="height:145px"><canvas id="c_dmode"></canvas></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="stl">Caste Eligibility Coverage</div><div class="cw" style="height:230px"><canvas id="c_dcaste"></canvas></div></div>
+    <div class="card"><div class="stl">Rate Comparison (%)</div><div class="cw" style="height:230px"><canvas id="c_drate"></canvas></div></div>
+  </div>
+</div>
+
+<!-- PAGE 3 -->
+<div id="p3" class="page">
+  <div class="g2" style="margin-bottom:18px">
+    <div class="card"><div class="stl">Top 15 — Total Schemes</div><div class="cw" style="height:380px"><canvas id="c_rtotal"></canvas></div></div>
+    <div class="card"><div class="stl">Top 15 — Online Rate %</div><div class="cw" style="height:380px"><canvas id="c_ronline"></canvas></div></div>
+  </div>
+  <div class="card"><div class="stl">Complete State Rankings</div><div class="tw"><table id="rankTbl"></table></div></div>
+</div>
+
+<!-- PAGE 4 -->
+<div id="p4" class="page">
+  <div class="ig" id="insightPills"></div>
+  <div class="g2">
+    <div class="card"><div class="stl">Female Share % — All States</div><div class="cw" style="height:420px"><canvas id="c_female"></canvas></div></div>
+    <div class="card"><div class="stl">Online Rate % — All States</div><div class="cw" style="height:420px"><canvas id="c_online"></canvas></div></div>
+  </div>
+  <div class="card" style="margin-top:18px"><div class="stl">Category Heatmap — Top 10 States</div><div class="tw" id="heatmap"></div></div>
+</div>
+
+<script>
+// ── DATA (injected) ──
+const STATES=[{"Rank": 1, "State / UT": "Gujarat", "Total Schemes": 642, "Online Apply": 203, "Offline Apply": 91, "Female Targeted": 40, "Online Rate %": 31.6, "Female Share %": 6.2, "Offline Rate %": 14.2, "Top Category": "Agriculture", "Top Cat. Count": 229}, {"Rank": 2, "State / UT": "Uttarakhand", "Total Schemes": 444, "Online Apply": 36, "Offline Apply": 202, "Female Targeted": 30, "Online Rate %": 8.1, "Female Share %": 6.8, "Offline Rate %": 45.5, "Top Category": "Agriculture", "Top Cat. Count": 97}, {"Rank": 3, "State / UT": "Madhya Pradesh", "Total Schemes": 286, "Online Apply": 53, "Offline Apply": 149, "Female Targeted": 26, "Online Rate %": 18.5, "Female Share %": 9.1, "Offline Rate %": 52.1, "Top Category": "Education & Learning", "Top Cat. Count": 84}, {"Rank": 4, "State / UT": "Puducherry", "Total Schemes": 272, "Online Apply": 27, "Offline Apply": 107, "Female Targeted": 26, "Online Rate %": 9.9, "Female Share %": 9.6, "Offline Rate %": 39.3, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 65}, {"Rank": 5, "State / UT": "Goa", "Total Schemes": 271, "Online Apply": 32, "Offline Apply": 115, "Female Targeted": 10, "Online Rate %": 11.8, "Female Share %": 3.7, "Offline Rate %": 42.4, "Top Category": "Sports & Culture", "Top Cat. Count": 59}, {"Rank": 6, "State / UT": "Haryana", "Total Schemes": 243, "Online Apply": 126, "Offline Apply": 25, "Female Targeted": 20, "Online Rate %": 51.9, "Female Share %": 8.2, "Offline Rate %": 10.3, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 87}, {"Rank": 7, "State / UT": "Tamil Nadu", "Total Schemes": 235, "Online Apply": 13, "Offline Apply": 127, "Female Targeted": 19, "Online Rate %": 5.5, "Female Share %": 8.1, "Offline Rate %": 54.0, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 76}, {"Rank": 8, "State / UT": "Rajasthan", "Total Schemes": 157, "Online Apply": 44, "Offline Apply": 39, "Female Targeted": 15, "Online Rate %": 28.0, "Female Share %": 9.6, "Offline Rate %": 24.8, "Top Category": "Education & Learning", "Top Cat. Count": 51}, {"Rank": 9, "State / UT": "Bihar", "Total Schemes": 111, "Online Apply": 43, "Offline Apply": 33, "Female Targeted": 16, "Online Rate %": 38.7, "Female Share %": 14.4, "Offline Rate %": 29.7, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 33}, {"Rank": 10, "State / UT": "West Bengal", "Total Schemes": 109, "Online Apply": 22, "Offline Apply": 28, "Female Targeted": 2, "Online Rate %": 20.2, "Female Share %": 1.8, "Offline Rate %": 25.7, "Top Category": "Business & Entrepreneurship", "Top Cat. Count": 49}, {"Rank": 11, "State / UT": "Chhattisgarh", "Total Schemes": 106, "Online Apply": 30, "Offline Apply": 26, "Female Targeted": 8, "Online Rate %": 28.3, "Female Share %": 7.5, "Offline Rate %": 24.5, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 33}, {"Rank": 12, "State / UT": "Jharkhand", "Total Schemes": 97, "Online Apply": 25, "Offline Apply": 35, "Female Targeted": 6, "Online Rate %": 25.8, "Female Share %": 6.2, "Offline Rate %": 36.1, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 25}, {"Rank": 13, "State / UT": "Maharashtra", "Total Schemes": 88, "Online Apply": 14, "Offline Apply": 48, "Female Targeted": 9, "Online Rate %": 15.9, "Female Share %": 10.2, "Offline Rate %": 54.5, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 32}, {"Rank": 14, "State / UT": "Kerala", "Total Schemes": 82, "Online Apply": 35, "Offline Apply": 18, "Female Targeted": 12, "Online Rate %": 42.7, "Female Share %": 14.6, "Offline Rate %": 22.0, "Top Category": "Education & Learning", "Top Cat. Count": 30}, {"Rank": 15, "State / UT": "Odisha", "Total Schemes": 81, "Online Apply": 27, "Offline Apply": 24, "Female Targeted": 7, "Online Rate %": 33.3, "Female Share %": 8.6, "Offline Rate %": 29.6, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 20}, {"Rank": 16, "State / UT": "Meghalaya", "Total Schemes": 81, "Online Apply": 18, "Offline Apply": 23, "Female Targeted": 1, "Online Rate %": 22.2, "Female Share %": 1.2, "Offline Rate %": 28.4, "Top Category": "Agriculture", "Top Cat. Count": 45}, {"Rank": 17, "State / UT": "Assam", "Total Schemes": 76, "Online Apply": 21, "Offline Apply": 18, "Female Targeted": 3, "Online Rate %": 27.6, "Female Share %": 3.9, "Offline Rate %": 23.7, "Top Category": "Education & Learning", "Top Cat. Count": 20}, {"Rank": 18, "State / UT": "Himachal Pradesh", "Total Schemes": 64, "Online Apply": 26, "Offline Apply": 21, "Female Targeted": 13, "Online Rate %": 40.6, "Female Share %": 20.3, "Offline Rate %": 32.8, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 19}, {"Rank": 19, "State / UT": "Karnataka", "Total Schemes": 55, "Online Apply": 36, "Offline Apply": 7, "Female Targeted": 6, "Online Rate %": 65.5, "Female Share %": 10.9, "Offline Rate %": 12.7, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 20}, {"Rank": 20, "State / UT": "Andhra Pradesh", "Total Schemes": 52, "Online Apply": 16, "Offline Apply": 19, "Female Targeted": 4, "Online Rate %": 30.8, "Female Share %": 7.7, "Offline Rate %": 36.5, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 33}, {"Rank": 21, "State / UT": "Delhi", "Total Schemes": 51, "Online Apply": 23, "Offline Apply": 11, "Female Targeted": 4, "Online Rate %": 45.1, "Female Share %": 7.8, "Offline Rate %": 21.6, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 20}, {"Rank": 22, "State / UT": "Uttar Pradesh", "Total Schemes": 46, "Online Apply": 22, "Offline Apply": 10, "Female Targeted": 4, "Online Rate %": 47.8, "Female Share %": 8.7, "Offline Rate %": 21.7, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 23}, {"Rank": 23, "State / UT": "Jammu and Kashmir", "Total Schemes": 46, "Online Apply": 17, "Offline Apply": 12, "Female Targeted": 5, "Online Rate %": 37.0, "Female Share %": 10.9, "Offline Rate %": 26.1, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 21}, {"Rank": 24, "State / UT": "Punjab", "Total Schemes": 40, "Online Apply": 4, "Offline Apply": 9, "Female Targeted": 7, "Online Rate %": 10.0, "Female Share %": 17.5, "Offline Rate %": 22.5, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 19}, {"Rank": 25, "State / UT": "Tripura", "Total Schemes": 38, "Online Apply": 2, "Offline Apply": 12, "Female Targeted": 3, "Online Rate %": 5.3, "Female Share %": 7.9, "Offline Rate %": 31.6, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 19}, {"Rank": 26, "State / UT": "Arunachal Pradesh", "Total Schemes": 38, "Online Apply": 3, "Offline Apply": 16, "Female Targeted": 3, "Online Rate %": 7.9, "Female Share %": 7.9, "Offline Rate %": 42.1, "Top Category": "Agriculture", "Top Cat. Count": 13}, {"Rank": 27, "State / UT": "Manipur", "Total Schemes": 27, "Online Apply": 3, "Offline Apply": 14, "Female Targeted": 2, "Online Rate %": 11.1, "Female Share %": 7.4, "Offline Rate %": 51.9, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 12}, {"Rank": 28, "State / UT": "Sikkim", "Total Schemes": 23, "Online Apply": 3, "Offline Apply": 14, "Female Targeted": 2, "Online Rate %": 13.0, "Female Share %": 8.7, "Offline Rate %": 60.9, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 15}, {"Rank": 29, "State / UT": "Telangana", "Total Schemes": 22, "Online Apply": 2, "Offline Apply": 13, "Female Targeted": 3, "Online Rate %": 9.1, "Female Share %": 13.6, "Offline Rate %": 59.1, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 13}, {"Rank": 30, "State / UT": "Chandigarh", "Total Schemes": 20, "Online Apply": 11, "Offline Apply": 1, "Female Targeted": 2, "Online Rate %": 55.0, "Female Share %": 10.0, "Offline Rate %": 5.0, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 16}, {"Rank": 31, "State / UT": "Andaman and Nicobar Islands", "Total Schemes": 20, "Online Apply": 9, "Offline Apply": 3, "Female Targeted": 1, "Online Rate %": 45.0, "Female Share %": 5.0, "Offline Rate %": 15.0, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 9}, {"Rank": 32, "State / UT": "Mizoram", "Total Schemes": 19, "Online Apply": 2, "Offline Apply": 10, "Female Targeted": 0, "Online Rate %": 10.5, "Female Share %": 0.0, "Offline Rate %": 52.6, "Top Category": "Education & Learning", "Top Cat. Count": 9}, {"Rank": 33, "State / UT": "Nagaland", "Total Schemes": 19, "Online Apply": 8, "Offline Apply": 7, "Female Targeted": 3, "Online Rate %": 42.1, "Female Share %": 15.8, "Offline Rate %": 36.8, "Top Category": "Education & Learning", "Top Cat. Count": 14}, {"Rank": 34, "State / UT": "Lakshadweep", "Total Schemes": 9, "Online Apply": 0, "Offline Apply": 5, "Female Targeted": 1, "Online Rate %": 0.0, "Female Share %": 11.1, "Offline Rate %": 55.6, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 5}, {"Rank": 35, "State / UT": "Ladakh", "Total Schemes": 4, "Online Apply": 1, "Offline Apply": 0, "Female Targeted": 0, "Online Rate %": 25.0, "Female Share %": 0.0, "Offline Rate %": 0.0, "Top Category": "Social welfare & Empowerment", "Top Cat. Count": 4}];
+const CATS=[{"State / UT": "Gujarat", "Total": 642, "Agriculture": 229, "Banking": 33, "Business & Entrepreneurship": 120, "Education & Learning": 95, "Health & Wellness": 19, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 14, "Social welfare & Empowerment": 53, "Sports & Culture": 46, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Uttarakhand", "Total": 444, "Agriculture": 97, "Banking": 0, "Business & Entrepreneurship": 31, "Education & Learning": 95, "Health & Wellness": 24, "Housing & Shelter": 0, "Public Safety": 0, "Science": 18, "Skills & Employment": 0, "Social welfare & Empowerment": 70, "Sports & Culture": 22, "Transport & Infrastructure": 0, "Travel & Tourism": 19, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Madhya Pradesh", "Total": 286, "Agriculture": 55, "Banking": 0, "Business & Entrepreneurship": 0, "Education & Learning": 84, "Health & Wellness": 8, "Housing & Shelter": 12, "Public Safety": 0, "Science": 0, "Skills & Employment": 0, "Social welfare & Empowerment": 61, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 23, "Utility & Sanitation": 5, "Women and Child": 13}, {"State / UT": "Puducherry", "Total": 272, "Agriculture": 30, "Banking": 24, "Business & Entrepreneurship": 57, "Education & Learning": 34, "Health & Wellness": 8, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 18, "Social welfare & Empowerment": 65, "Sports & Culture": 9, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Goa", "Total": 271, "Agriculture": 37, "Banking": 6, "Business & Entrepreneurship": 59, "Education & Learning": 31, "Health & Wellness": 0, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 11, "Social welfare & Empowerment": 49, "Sports & Culture": 59, "Transport & Infrastructure": 5, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Haryana", "Total": 243, "Agriculture": 52, "Banking": 30, "Business & Entrepreneurship": 14, "Education & Learning": 29, "Health & Wellness": 4, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 0, "Social welfare & Empowerment": 87, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 7, "Utility & Sanitation": 0, "Women and Child": 11}, {"State / UT": "Tamil Nadu", "Total": 235, "Agriculture": 31, "Banking": 23, "Business & Entrepreneurship": 20, "Education & Learning": 32, "Health & Wellness": 0, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 28, "Social welfare & Empowerment": 76, "Sports & Culture": 3, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 13}, {"State / UT": "Rajasthan", "Total": 157, "Agriculture": 27, "Banking": 5, "Business & Entrepreneurship": 10, "Education & Learning": 51, "Health & Wellness": 10, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 7, "Social welfare & Empowerment": 28, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 8}, {"State / UT": "Bihar", "Total": 111, "Agriculture": 26, "Banking": 0, "Business & Entrepreneurship": 6, "Education & Learning": 23, "Health & Wellness": 6, "Housing & Shelter": 3, "Public Safety": 0, "Science": 0, "Skills & Employment": 4, "Social welfare & Empowerment": 33, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 5}, {"State / UT": "West Bengal", "Total": 109, "Agriculture": 5, "Banking": 1, "Business & Entrepreneurship": 49, "Education & Learning": 6, "Health & Wellness": 5, "Housing & Shelter": 4, "Public Safety": 0, "Science": 0, "Skills & Employment": 2, "Social welfare & Empowerment": 35, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Chhattisgarh", "Total": 106, "Agriculture": 13, "Banking": 0, "Business & Entrepreneurship": 5, "Education & Learning": 28, "Health & Wellness": 15, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 4, "Social welfare & Empowerment": 33, "Sports & Culture": 0, "Transport & Infrastructure": 2, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 3}, {"State / UT": "Jharkhand", "Total": 97, "Agriculture": 15, "Banking": 4, "Business & Entrepreneurship": 0, "Education & Learning": 22, "Health & Wellness": 6, "Housing & Shelter": 3, "Public Safety": 0, "Science": 0, "Skills & Employment": 10, "Social welfare & Empowerment": 25, "Sports & Culture": 7, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Maharashtra", "Total": 88, "Agriculture": 6, "Banking": 7, "Business & Entrepreneurship": 7, "Education & Learning": 22, "Health & Wellness": 0, "Housing & Shelter": 3, "Public Safety": 0, "Science": 0, "Skills & Employment": 6, "Social welfare & Empowerment": 32, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 3}, {"State / UT": "Kerala", "Total": 82, "Agriculture": 0, "Banking": 0, "Business & Entrepreneurship": 12, "Education & Learning": 30, "Health & Wellness": 4, "Housing & Shelter": 2, "Public Safety": 0, "Science": 5, "Skills & Employment": 2, "Social welfare & Empowerment": 25, "Sports & Culture": 1, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Odisha", "Total": 81, "Agriculture": 15, "Banking": 2, "Business & Entrepreneurship": 0, "Education & Learning": 16, "Health & Wellness": 8, "Housing & Shelter": 2, "Public Safety": 0, "Science": 0, "Skills & Employment": 0, "Social welfare & Empowerment": 20, "Sports & Culture": 8, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 8}, {"State / UT": "Meghalaya", "Total": 81, "Agriculture": 45, "Banking": 0, "Business & Entrepreneurship": 2, "Education & Learning": 12, "Health & Wellness": 0, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 2, "Social welfare & Empowerment": 9, "Sports & Culture": 2, "Transport & Infrastructure": 0, "Travel & Tourism": 4, "Utility & Sanitation": 0, "Women and Child": 1}, {"State / UT": "Assam", "Total": 76, "Agriculture": 10, "Banking": 4, "Business & Entrepreneurship": 2, "Education & Learning": 20, "Health & Wellness": 10, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 4, "Social welfare & Empowerment": 17, "Sports & Culture": 4, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Himachal Pradesh", "Total": 64, "Agriculture": 7, "Banking": 0, "Business & Entrepreneurship": 0, "Education & Learning": 14, "Health & Wellness": 4, "Housing & Shelter": 3, "Public Safety": 0, "Science": 0, "Skills & Employment": 5, "Social welfare & Empowerment": 19, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 3, "Women and Child": 6}, {"State / UT": "Karnataka", "Total": 55, "Agriculture": 2, "Banking": 0, "Business & Entrepreneurship": 11, "Education & Learning": 6, "Health & Wellness": 4, "Housing & Shelter": 1, "Public Safety": 0, "Science": 0, "Skills & Employment": 7, "Social welfare & Empowerment": 20, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 4}, {"State / UT": "Andhra Pradesh", "Total": 52, "Agriculture": 0, "Banking": 0, "Business & Entrepreneurship": 3, "Education & Learning": 11, "Health & Wellness": 1, "Housing & Shelter": 1, "Public Safety": 0, "Science": 0, "Skills & Employment": 3, "Social welfare & Empowerment": 33, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Delhi", "Total": 51, "Agriculture": 0, "Banking": 2, "Business & Entrepreneurship": 6, "Education & Learning": 15, "Health & Wellness": 5, "Housing & Shelter": 1, "Public Safety": 0, "Science": 0, "Skills & Employment": 0, "Social welfare & Empowerment": 20, "Sports & Culture": 0, "Transport & Infrastructure": 1, "Travel & Tourism": 1, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Uttar Pradesh", "Total": 46, "Agriculture": 3, "Banking": 0, "Business & Entrepreneurship": 0, "Education & Learning": 12, "Health & Wellness": 2, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 0, "Social welfare & Empowerment": 23, "Sports & Culture": 4, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 2}, {"State / UT": "Jammu and Kashmir", "Total": 46, "Agriculture": 0, "Banking": 4, "Business & Entrepreneurship": 3, "Education & Learning": 6, "Health & Wellness": 2, "Housing & Shelter": 2, "Public Safety": 0, "Science": 0, "Skills & Employment": 3, "Social welfare & Empowerment": 21, "Sports & Culture": 0, "Transport & Infrastructure": 2, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Punjab", "Total": 40, "Agriculture": 0, "Banking": 3, "Business & Entrepreneurship": 1, "Education & Learning": 5, "Health & Wellness": 8, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 0, "Social welfare & Empowerment": 19, "Sports & Culture": 1, "Transport & Infrastructure": 0, "Travel & Tourism": 2, "Utility & Sanitation": 0, "Women and Child": 1}, {"State / UT": "Tripura", "Total": 38, "Agriculture": 0, "Banking": 0, "Business & Entrepreneurship": 2, "Education & Learning": 6, "Health & Wellness": 3, "Housing & Shelter": 1, "Public Safety": 1, "Science": 0, "Skills & Employment": 2, "Social welfare & Empowerment": 19, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 2}, {"State / UT": "Arunachal Pradesh", "Total": 38, "Agriculture": 13, "Banking": 0, "Business & Entrepreneurship": 3, "Education & Learning": 3, "Health & Wellness": 5, "Housing & Shelter": 1, "Public Safety": 0, "Science": 0, "Skills & Employment": 2, "Social welfare & Empowerment": 8, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 2, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Manipur", "Total": 27, "Agriculture": 0, "Banking": 0, "Business & Entrepreneurship": 1, "Education & Learning": 5, "Health & Wellness": 1, "Housing & Shelter": 1, "Public Safety": 0, "Science": 0, "Skills & Employment": 2, "Social welfare & Empowerment": 12, "Sports & Culture": 5, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Sikkim", "Total": 23, "Agriculture": 0, "Banking": 2, "Business & Entrepreneurship": 1, "Education & Learning": 2, "Health & Wellness": 1, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 1, "Social welfare & Empowerment": 15, "Sports & Culture": 1, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Telangana", "Total": 22, "Agriculture": 4, "Banking": 0, "Business & Entrepreneurship": 0, "Education & Learning": 2, "Health & Wellness": 1, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 1, "Social welfare & Empowerment": 13, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 1}, {"State / UT": "Chandigarh", "Total": 20, "Agriculture": 0, "Banking": 1, "Business & Entrepreneurship": 0, "Education & Learning": 1, "Health & Wellness": 1, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 0, "Social welfare & Empowerment": 16, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 1}, {"State / UT": "Andaman and Nicobar Islands", "Total": 20, "Agriculture": 0, "Banking": 1, "Business & Entrepreneurship": 0, "Education & Learning": 4, "Health & Wellness": 2, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 1, "Social welfare & Empowerment": 9, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 1, "Utility & Sanitation": 2, "Women and Child": 0}, {"State / UT": "Mizoram", "Total": 19, "Agriculture": 2, "Banking": 1, "Business & Entrepreneurship": 0, "Education & Learning": 9, "Health & Wellness": 1, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 0, "Social welfare & Empowerment": 6, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Nagaland", "Total": 19, "Agriculture": 0, "Banking": 2, "Business & Entrepreneurship": 0, "Education & Learning": 14, "Health & Wellness": 1, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 0, "Social welfare & Empowerment": 1, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 1}, {"State / UT": "Lakshadweep", "Total": 9, "Agriculture": 0, "Banking": 0, "Business & Entrepreneurship": 1, "Education & Learning": 1, "Health & Wellness": 0, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 2, "Social welfare & Empowerment": 5, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "Ladakh", "Total": 4, "Agriculture": 0, "Banking": 0, "Business & Entrepreneurship": 0, "Education & Learning": 0, "Health & Wellness": 0, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 0, "Social welfare & Empowerment": 4, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}, {"State / UT": "TOTAL", "Total": 0, "Agriculture": 0, "Banking": 0, "Business & Entrepreneurship": 0, "Education & Learning": 0, "Health & Wellness": 0, "Housing & Shelter": 0, "Public Safety": 0, "Science": 0, "Skills & Employment": 0, "Social welfare & Empowerment": 0, "Sports & Culture": 0, "Transport & Infrastructure": 0, "Travel & Tourism": 0, "Utility & Sanitation": 0, "Women and Child": 0}];
+const GENDERS=[{"State / UT": "Gujarat", "Total": 642, "Gender: All": 403, "Gender: Male": 199, "Gender: Female": 40, "Mode: Online": 203, "Mode: Offline": 91, "Mode: Refer Official": 347, "Mode: Via CSC": 1, "Online Rate %": 31.6, "Female Share %": 6.2}, {"State / UT": "Uttarakhand", "Total": 444, "Gender: All": 234, "Gender: Male": 180, "Gender: Female": 30, "Mode: Online": 36, "Mode: Offline": 202, "Mode: Refer Official": 192, "Mode: Via CSC": 14, "Online Rate %": 8.1, "Female Share %": 6.8}, {"State / UT": "Madhya Pradesh", "Total": 286, "Gender: All": 104, "Gender: Male": 156, "Gender: Female": 26, "Mode: Online": 53, "Mode: Offline": 149, "Mode: Refer Official": 84, "Mode: Via CSC": 0, "Online Rate %": 18.5, "Female Share %": 9.1}, {"State / UT": "Puducherry", "Total": 272, "Gender: All": 138, "Gender: Male": 108, "Gender: Female": 26, "Mode: Online": 27, "Mode: Offline": 107, "Mode: Refer Official": 138, "Mode: Via CSC": 0, "Online Rate %": 9.9, "Female Share %": 9.6}, {"State / UT": "Goa", "Total": 271, "Gender: All": 131, "Gender: Male": 130, "Gender: Female": 10, "Mode: Online": 32, "Mode: Offline": 115, "Mode: Refer Official": 124, "Mode: Via CSC": 0, "Online Rate %": 11.8, "Female Share %": 3.7}, {"State / UT": "Haryana", "Total": 243, "Gender: All": 97, "Gender: Male": 126, "Gender: Female": 20, "Mode: Online": 126, "Mode: Offline": 25, "Mode: Refer Official": 92, "Mode: Via CSC": 0, "Online Rate %": 51.9, "Female Share %": 8.2}, {"State / UT": "Tamil Nadu", "Total": 235, "Gender: All": 87, "Gender: Male": 129, "Gender: Female": 19, "Mode: Online": 13, "Mode: Offline": 127, "Mode: Refer Official": 82, "Mode: Via CSC": 13, "Online Rate %": 5.5, "Female Share %": 8.1}, {"State / UT": "Rajasthan", "Total": 157, "Gender: All": 82, "Gender: Male": 60, "Gender: Female": 15, "Mode: Online": 44, "Mode: Offline": 39, "Mode: Refer Official": 70, "Mode: Via CSC": 4, "Online Rate %": 28.0, "Female Share %": 9.6}, {"State / UT": "Bihar", "Total": 111, "Gender: All": 38, "Gender: Male": 57, "Gender: Female": 16, "Mode: Online": 43, "Mode: Offline": 33, "Mode: Refer Official": 35, "Mode: Via CSC": 0, "Online Rate %": 38.7, "Female Share %": 14.4}, {"State / UT": "West Bengal", "Total": 109, "Gender: All": 61, "Gender: Male": 46, "Gender: Female": 2, "Mode: Online": 22, "Mode: Offline": 28, "Mode: Refer Official": 59, "Mode: Via CSC": 0, "Online Rate %": 20.2, "Female Share %": 1.8}, {"State / UT": "Chhattisgarh", "Total": 106, "Gender: All": 52, "Gender: Male": 46, "Gender: Female": 8, "Mode: Online": 30, "Mode: Offline": 26, "Mode: Refer Official": 50, "Mode: Via CSC": 0, "Online Rate %": 28.3, "Female Share %": 7.5}, {"State / UT": "Jharkhand", "Total": 97, "Gender: All": 40, "Gender: Male": 51, "Gender: Female": 6, "Mode: Online": 25, "Mode: Offline": 35, "Mode: Refer Official": 35, "Mode: Via CSC": 2, "Online Rate %": 25.8, "Female Share %": 6.2}, {"State / UT": "Maharashtra", "Total": 88, "Gender: All": 32, "Gender: Male": 47, "Gender: Female": 9, "Mode: Online": 14, "Mode: Offline": 48, "Mode: Refer Official": 26, "Mode: Via CSC": 0, "Online Rate %": 15.9, "Female Share %": 10.2}, {"State / UT": "Kerala", "Total": 82, "Gender: All": 30, "Gender: Male": 40, "Gender: Female": 12, "Mode: Online": 35, "Mode: Offline": 18, "Mode: Refer Official": 29, "Mode: Via CSC": 0, "Online Rate %": 42.7, "Female Share %": 14.6}, {"State / UT": "Odisha", "Total": 81, "Gender: All": 35, "Gender: Male": 39, "Gender: Female": 7, "Mode: Online": 27, "Mode: Offline": 24, "Mode: Refer Official": 30, "Mode: Via CSC": 0, "Online Rate %": 33.3, "Female Share %": 8.6}, {"State / UT": "Meghalaya", "Total": 81, "Gender: All": 40, "Gender: Male": 40, "Gender: Female": 1, "Mode: Online": 18, "Mode: Offline": 23, "Mode: Refer Official": 40, "Mode: Via CSC": 0, "Online Rate %": 22.2, "Female Share %": 1.2}, {"State / UT": "Assam", "Total": 76, "Gender: All": 39, "Gender: Male": 34, "Gender: Female": 3, "Mode: Online": 21, "Mode: Offline": 18, "Mode: Refer Official": 37, "Mode: Via CSC": 0, "Online Rate %": 27.6, "Female Share %": 3.9}, {"State / UT": "Himachal Pradesh", "Total": 64, "Gender: All": 17, "Gender: Male": 34, "Gender: Female": 13, "Mode: Online": 26, "Mode: Offline": 21, "Mode: Refer Official": 16, "Mode: Via CSC": 1, "Online Rate %": 40.6, "Female Share %": 20.3}, {"State / UT": "Karnataka", "Total": 55, "Gender: All": 15, "Gender: Male": 34, "Gender: Female": 6, "Mode: Online": 36, "Mode: Offline": 7, "Mode: Refer Official": 12, "Mode: Via CSC": 0, "Online Rate %": 65.5, "Female Share %": 10.9}, {"State / UT": "Andhra Pradesh", "Total": 52, "Gender: All": 19, "Gender: Male": 29, "Gender: Female": 4, "Mode: Online": 16, "Mode: Offline": 19, "Mode: Refer Official": 17, "Mode: Via CSC": 0, "Online Rate %": 30.8, "Female Share %": 7.7}, {"State / UT": "Delhi", "Total": 51, "Gender: All": 17, "Gender: Male": 30, "Gender: Female": 4, "Mode: Online": 23, "Mode: Offline": 11, "Mode: Refer Official": 17, "Mode: Via CSC": 0, "Online Rate %": 45.1, "Female Share %": 7.8}, {"State / UT": "Uttar Pradesh", "Total": 46, "Gender: All": 17, "Gender: Male": 25, "Gender: Female": 4, "Mode: Online": 22, "Mode: Offline": 10, "Mode: Refer Official": 14, "Mode: Via CSC": 0, "Online Rate %": 47.8, "Female Share %": 8.7}, {"State / UT": "Jammu and Kashmir", "Total": 46, "Gender: All": 21, "Gender: Male": 20, "Gender: Female": 5, "Mode: Online": 17, "Mode: Offline": 12, "Mode: Refer Official": 17, "Mode: Via CSC": 0, "Online Rate %": 37.0, "Female Share %": 10.9}, {"State / UT": "Punjab", "Total": 40, "Gender: All": 23, "Gender: Male": 10, "Gender: Female": 7, "Mode: Online": 4, "Mode: Offline": 9, "Mode: Refer Official": 10, "Mode: Via CSC": 17, "Online Rate %": 10.0, "Female Share %": 17.5}, {"State / UT": "Tripura", "Total": 38, "Gender: All": 20, "Gender: Male": 15, "Gender: Female": 3, "Mode: Online": 2, "Mode: Offline": 12, "Mode: Refer Official": 17, "Mode: Via CSC": 7, "Online Rate %": 5.3, "Female Share %": 7.9}, {"State / UT": "Arunachal Pradesh", "Total": 38, "Gender: All": 19, "Gender: Male": 16, "Gender: Female": 3, "Mode: Online": 3, "Mode: Offline": 16, "Mode: Refer Official": 19, "Mode: Via CSC": 0, "Online Rate %": 7.9, "Female Share %": 7.9}, {"State / UT": "Manipur", "Total": 27, "Gender: All": 11, "Gender: Male": 14, "Gender: Female": 2, "Mode: Online": 3, "Mode: Offline": 14, "Mode: Refer Official": 10, "Mode: Via CSC": 0, "Online Rate %": 11.1, "Female Share %": 7.4}, {"State / UT": "Sikkim", "Total": 23, "Gender: All": 6, "Gender: Male": 15, "Gender: Female": 2, "Mode: Online": 3, "Mode: Offline": 14, "Mode: Refer Official": 6, "Mode: Via CSC": 0, "Online Rate %": 13.0, "Female Share %": 8.7}, {"State / UT": "Telangana", "Total": 22, "Gender: All": 8, "Gender: Male": 11, "Gender: Female": 3, "Mode: Online": 2, "Mode: Offline": 13, "Mode: Refer Official": 7, "Mode: Via CSC": 0, "Online Rate %": 9.1, "Female Share %": 13.6}, {"State / UT": "Chandigarh", "Total": 20, "Gender: All": 12, "Gender: Male": 6, "Gender: Female": 2, "Mode: Online": 11, "Mode: Offline": 1, "Mode: Refer Official": 8, "Mode: Via CSC": 0, "Online Rate %": 55.0, "Female Share %": 10.0}, {"State / UT": "Andaman and Nicobar Islands", "Total": 20, "Gender: All": 8, "Gender: Male": 11, "Gender: Female": 1, "Mode: Online": 9, "Mode: Offline": 3, "Mode: Refer Official": 8, "Mode: Via CSC": 0, "Online Rate %": 45.0, "Female Share %": 5.0}, {"State / UT": "Mizoram", "Total": 19, "Gender: All": 7, "Gender: Male": 12, "Gender: Female": 0, "Mode: Online": 2, "Mode: Offline": 10, "Mode: Refer Official": 7, "Mode: Via CSC": 0, "Online Rate %": 10.5, "Female Share %": 0.0}, {"State / UT": "Nagaland", "Total": 19, "Gender: All": 4, "Gender: Male": 12, "Gender: Female": 3, "Mode: Online": 8, "Mode: Offline": 7, "Mode: Refer Official": 4, "Mode: Via CSC": 0, "Online Rate %": 42.1, "Female Share %": 15.8}, {"State / UT": "Lakshadweep", "Total": 9, "Gender: All": 5, "Gender: Male": 3, "Gender: Female": 1, "Mode: Online": 0, "Mode: Offline": 5, "Mode: Refer Official": 4, "Mode: Via CSC": 0, "Online Rate %": 0.0, "Female Share %": 11.1}, {"State / UT": "Ladakh", "Total": 4, "Gender: All": 3, "Gender: Male": 1, "Gender: Female": 0, "Mode: Online": 1, "Mode: Offline": 0, "Mode: Refer Official": 3, "Mode: Via CSC": 0, "Online Rate %": 25.0, "Female Share %": 0.0}];
+const CASTES=[{"State / UT": "Gujarat", "Total": 642, "All Categories": 347, "ST": 295, "SC": 278, "General": 44, "OBC": 3, "EWS": 9, "Minority": 0}, {"State / UT": "Uttarakhand", "Total": 444, "All Categories": 193, "ST": 250, "SC": 177, "General": 21, "OBC": 8, "EWS": 25, "Minority": 0}, {"State / UT": "Madhya Pradesh", "Total": 286, "All Categories": 84, "ST": 202, "SC": 171, "General": 12, "OBC": 6, "EWS": 5, "Minority": 0}, {"State / UT": "Puducherry", "Total": 272, "All Categories": 138, "ST": 134, "SC": 121, "General": 24, "OBC": 0, "EWS": 5, "Minority": 0}, {"State / UT": "Goa", "Total": 271, "All Categories": 124, "ST": 147, "SC": 140, "General": 7, "OBC": 5, "EWS": 13, "Minority": 0}, {"State / UT": "Haryana", "Total": 243, "All Categories": 92, "ST": 151, "SC": 148, "General": 6, "OBC": 2, "EWS": 0, "Minority": 5}, {"State / UT": "Tamil Nadu", "Total": 235, "All Categories": 82, "ST": 153, "SC": 103, "General": 5, "OBC": 0, "EWS": 10, "Minority": 0}, {"State / UT": "Rajasthan", "Total": 157, "All Categories": 70, "ST": 87, "SC": 82, "General": 5, "OBC": 7, "EWS": 5, "Minority": 0}, {"State / UT": "Bihar", "Total": 111, "All Categories": 35, "ST": 76, "SC": 65, "General": 9, "OBC": 2, "EWS": 0, "Minority": 4}, {"State / UT": "West Bengal", "Total": 109, "All Categories": 59, "ST": 50, "SC": 44, "General": 4, "OBC": 1, "EWS": 1, "Minority": 0}, {"State / UT": "Chhattisgarh", "Total": 106, "All Categories": 50, "ST": 56, "SC": 53, "General": 2, "OBC": 0, "EWS": 1, "Minority": 0}, {"State / UT": "Jharkhand", "Total": 97, "All Categories": 35, "ST": 62, "SC": 59, "General": 0, "OBC": 1, "EWS": 4, "Minority": 2}, {"State / UT": "Maharashtra", "Total": 88, "All Categories": 26, "ST": 62, "SC": 42, "General": 2, "OBC": 4, "EWS": 0, "Minority": 2}, {"State / UT": "Kerala", "Total": 82, "All Categories": 29, "ST": 53, "SC": 51, "General": 8, "OBC": 0, "EWS": 5, "Minority": 5}, {"State / UT": "Odisha", "Total": 81, "All Categories": 30, "ST": 51, "SC": 45, "General": 14, "OBC": 2, "EWS": 3, "Minority": 0}, {"State / UT": "Meghalaya", "Total": 81, "All Categories": 40, "ST": 41, "SC": 31, "General": 0, "OBC": 1, "EWS": 3, "Minority": 0}, {"State / UT": "Assam", "Total": 76, "All Categories": 37, "ST": 39, "SC": 36, "General": 12, "OBC": 2, "EWS": 0, "Minority": 0}, {"State / UT": "Himachal Pradesh", "Total": 64, "All Categories": 16, "ST": 48, "SC": 47, "General": 4, "OBC": 2, "EWS": 5, "Minority": 0}, {"State / UT": "Karnataka", "Total": 55, "All Categories": 12, "ST": 43, "SC": 40, "General": 1, "OBC": 0, "EWS": 0, "Minority": 9}, {"State / UT": "Andhra Pradesh", "Total": 52, "All Categories": 17, "ST": 35, "SC": 32, "General": 0, "OBC": 0, "EWS": 1, "Minority": 0}, {"State / UT": "Delhi", "Total": 51, "All Categories": 17, "ST": 34, "SC": 34, "General": 0, "OBC": 10, "EWS": 3, "Minority": 7}, {"State / UT": "Uttar Pradesh", "Total": 46, "All Categories": 15, "ST": 31, "SC": 24, "General": 1, "OBC": 6, "EWS": 0, "Minority": 1}, {"State / UT": "Jammu and Kashmir", "Total": 46, "All Categories": 17, "ST": 29, "SC": 26, "General": 3, "OBC": 0, "EWS": 5, "Minority": 0}, {"State / UT": "Punjab", "Total": 40, "All Categories": 10, "ST": 30, "SC": 26, "General": 1, "OBC": 0, "EWS": 0, "Minority": 0}, {"State / UT": "Tripura", "Total": 38, "All Categories": 17, "ST": 21, "SC": 21, "General": 3, "OBC": 0, "EWS": 2, "Minority": 0}, {"State / UT": "Arunachal Pradesh", "Total": 38, "All Categories": 19, "ST": 19, "SC": 19, "General": 0, "OBC": 0, "EWS": 1, "Minority": 0}, {"State / UT": "Manipur", "Total": 27, "All Categories": 10, "ST": 17, "SC": 13, "General": 0, "OBC": 0, "EWS": 0, "Minority": 0}, {"State / UT": "Sikkim", "Total": 23, "All Categories": 6, "ST": 17, "SC": 17, "General": 1, "OBC": 0, "EWS": 1, "Minority": 1}, {"State / UT": "Telangana", "Total": 22, "All Categories": 7, "ST": 15, "SC": 14, "General": 0, "OBC": 0, "EWS": 1, "Minority": 1}, {"State / UT": "Chandigarh", "Total": 20, "All Categories": 8, "ST": 12, "SC": 11, "General": 0, "OBC": 0, "EWS": 0, "Minority": 0}, {"State / UT": "Andaman and Nicobar Islands", "Total": 20, "All Categories": 8, "ST": 12, "SC": 11, "General": 0, "OBC": 1, "EWS": 2, "Minority": 0}, {"State / UT": "Mizoram", "Total": 19, "All Categories": 7, "ST": 12, "SC": 9, "General": 1, "OBC": 0, "EWS": 0, "Minority": 0}, {"State / UT": "Nagaland", "Total": 19, "All Categories": 4, "ST": 15, "SC": 15, "General": 2, "OBC": 0, "EWS": 1, "Minority": 0}, {"State / UT": "Lakshadweep", "Total": 9, "All Categories": 4, "ST": 5, "SC": 5, "General": 0, "OBC": 0, "EWS": 0, "Minority": 0}, {"State / UT": "Ladakh", "Total": 4, "All Categories": 3, "ST": 1, "SC": 1, "General": 0, "OBC": 0, "EWS": 0, "Minority": 0}, {"State / UT": "TOTAL", "Total": 0, "All Categories": 0, "ST": 0, "SC": 0, "General": 0, "OBC": 0, "EWS": 0, "Minority": 0}];
+const NAT_CATS=[['Social Welfare & Empowerment',1075],['Education & Learning',978],['Agriculture',790],['Business & Entrepreneurship',536],['Skills & Employment',211],['Banking',210],['Sports & Culture',206],['Health & Wellness',202],['Women and Child',127],['Housing & Shelter',92]];
+
+
+// ── CHART ENGINE ──
+Chart.defaults.color='#8fa4bb';
+Chart.defaults.font.family='Segoe UI,Arial,sans-serif';
+Chart.defaults.font.size=11;
+const PAL=['#2e75b6','#4fc3f7','#38b2ac','#f6ad55','#fc8181','#68d391','#b794f4','#f687b3','#63b3ed','#fbd38d','#76e4f7','#9ae6b4','#d6bcfa','#fba4a4','#a0d9f0'];
+let CH={};
+function dc(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
+function mk(id,type,labels,datasets,opts){
+  dc(id);const ctx=document.getElementById(id);if(!ctx)return;
+  CH[id]=new Chart(ctx,{type,data:{labels,datasets},options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#8fa4bb',boxWidth:12,font:{size:11}}},
+             tooltip:{backgroundColor:'#0d1c2e',titleColor:'#e0eaf4',bodyColor:'#8fa4bb',borderColor:'#2e4a73',borderWidth:1}},
+    ...opts
+  }});
+}
+const XGRID={color:'#1a2f48'};const YGRID={color:'#1a2f48'};
+const XT={color:'#8fa4bb'};const YT={color:'#c0d0e0'};
+function barH(id,labels,data,color,xPct){
+  mk(id,'bar',labels,[{label:'',data,backgroundColor:color||PAL,borderRadius:5}],{
+    indexAxis:'y',plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#8fa4bb',...(xPct?{callback:v=>v+'%'}:{})},grid:XGRID},
+            y:{ticks:{color:'#c0d0e0',font:{size:10}},grid:{display:false}}}
+  });
+}
+function donut(id,labels,data,colors){
+  mk(id,'doughnut',labels,[{data,backgroundColor:colors,borderWidth:2,borderColor:'#162135'}],{
+    cutout:'68%',plugins:{legend:{position:'right',labels:{color:'#8fa4bb',boxWidth:11,font:{size:10}}}}
+  });
+}
+
+// ── PAGE 1 ──
+function initP1(){
+  const nc_l=NAT_CATS.map(x=>x[0]),nc_d=NAT_CATS.map(x=>x[1]);
+  barH('c_natcat',nc_l,nc_d,PAL);
+  donut('c_central',['Central (660)','State (4020)'],[660,4020],['#4fc3f7','#2e75b6']);
+  donut('c_mode',['Refer Official (1983)','Offline (1423)','Online (1210)','CSC (64)'],[1983,1423,1210,64],['#f6ad55','#fc8181','#68d391','#4fc3f7']);
+  donut('c_gender',['All Genders (2217)','Male (2097)','Female (366)'],[2217,2097,366],['#63b3ed','#4fc3f7','#f687b3']);
+  const t10=STATES.slice(0,10);
+  barH('c_top10',t10.map(s=>s['State / UT']),t10.map(s=>s['Total Schemes']),PAL.slice(0,10));
+}
+
+// ── PAGE 2 ──
+let drillInit=false;
+function initP2(){
+  if(drillInit)return;drillInit=true;
+  const sel=document.getElementById('stateSel');
+  STATES.forEach(s=>{const o=document.createElement('option');o.value=s['State / UT'];o.text=s['State / UT'];sel.appendChild(o);});
+  drillRender();
+}
+function drillRender(){
+  const name=document.getElementById('stateSel').value;
+  const s=STATES.find(x=>x['State / UT']===name)||STATES[0];
+  const g=GENDERS.find(x=>x['State / UT']===name)||{};
+  const ca=CASTES.find(x=>x['State / UT']===name)||{};
+  const ct=CATS.find(x=>x['State / UT']===name)||{};
+
+  document.getElementById('drillKPIs').innerHTML=`
+    <div class="kpi"><div class="label">Total Schemes</div><div class="value">${s['Total Schemes']}</div><div class="sub">Rank #${s['Rank']}</div></div>
+    <div class="kpi"><div class="label">Online Apply</div><div class="value">${s['Online Apply']}</div><div class="sub">${s['Online Rate %']}%</div></div>
+    <div class="kpi"><div class="label">Offline Apply</div><div class="value">${s['Offline Apply']}</div><div class="sub">${s['Offline Rate %']}%</div></div>
+    <div class="kpi"><div class="label">Female Targeted</div><div class="value">${s['Female Targeted']}</div><div class="sub">${s['Female Share %']}%</div></div>
+    <div class="kpi"><div class="label">Top Category</div><div class="value" style="font-size:13px;padding-top:4px">${s['Top Category']}</div><div class="sub">${s['Top Cat. Count']} schemes</div></div>
+  `;
+
+  const catCols=['Agriculture','Banking','Business & Entrepreneurship','Education & Learning','Health & Wellness','Housing & Shelter','Skills & Employment','Social welfare & Empowerment','Sports & Culture','Women and Child'];
+  barH('c_dcat',catCols,catCols.map(c=>ct[c]||0),PAL.slice(0,10));
+  donut('c_dgender',['All','Male','Female'],[g['Gender: All']||0,g['Gender: Male']||0,g['Gender: Female']||0],['#63b3ed','#4fc3f7','#f687b3']);
+  donut('c_dmode',['Online','Offline','Refer Official','Via CSC'],[g['Mode: Online']||0,g['Mode: Offline']||0,g['Mode: Refer Official']||0,g['Mode: Via CSC']||0],['#68d391','#fc8181','#f6ad55','#4fc3f7']);
+  const cc=['All Categories','ST','SC','General','OBC','EWS','Minority'];
+  mk('c_dcaste','bar',cc,[{label:'Schemes',data:cc.map(c=>ca[c]||0),backgroundColor:PAL,borderRadius:5}],{
+    plugins:{legend:{display:false}},scales:{x:{ticks:XT,grid:{display:false}},y:{ticks:YT,grid:YGRID}}
+  });
+  mk('c_drate','bar',['Online Rate %','Offline Rate %','Female Share %'],[{data:[s['Online Rate %'],s['Offline Rate %'],s['Female Share %']],backgroundColor:['#68d391','#fc8181','#f687b3'],borderRadius:8}],{
+    plugins:{legend:{display:false}},scales:{x:{ticks:XT,grid:{display:false}},y:{ticks:{...YT,callback:v=>v+'%'},grid:YGRID,max:100}}
+  });
+}
+
+// ── PAGE 3 ──
+let p3Init=false;
+function initP3(){
+  if(p3Init)return;p3Init=true;
+  const t15=STATES.slice(0,15);
+  barH('c_rtotal',t15.map(s=>s['State / UT']),t15.map(s=>s['Total Schemes']),PAL);
+  const so=[...STATES].sort((a,b)=>b['Online Rate %']-a['Online Rate %']).slice(0,15);
+  barH('c_ronline',so.map(s=>s['State / UT']),so.map(s=>s['Online Rate %']),'#68d391',true);
+  const mx=Math.max(...STATES.map(s=>s['Total Schemes']));
+  const tbl=document.getElementById('rankTbl');
+  tbl.innerHTML='<thead><tr><th>Rank</th><th>State / UT</th><th>Total</th><th>Online</th><th>Offline</th><th>Female</th><th>Online %</th><th>Female %</th><th>Offline %</th><th>Top Category</th></tr></thead><tbody>'+
+  STATES.map(s=>{
+    const p=((s['Total Schemes']/mx)*100).toFixed(0);
+    const rc=s['Rank']===1?'r1':s['Rank']===2?'r2':s['Rank']===3?'r3':'';
+    return `<tr><td class="${rc}">${s['Rank']}</td><td class="left">${s['State / UT']}</td>
+    <td><div>${s['Total Schemes']}</div><div class="bb"><div class="bf" style="width:${p}%"></div></div></td>
+    <td>${s['Online Apply']}</td><td>${s['Offline Apply']}</td><td>${s['Female Targeted']}</td>
+    <td><span class="bdg bdg-g">${s['Online Rate %']}%</span></td>
+    <td><span class="bdg bdg-b">${s['Female Share %']}%</span></td>
+    <td><span class="bdg bdg-o">${s['Offline Rate %']}%</span></td>
+    <td class="left" style="font-size:11px">${s['Top Category']}</td></tr>`;
+  }).join('')+'</tbody>';
+}
+
+// ── PAGE 4 ──
+let p4Init=false;
+function initP4(){
+  if(p4Init)return;p4Init=true;
+  const tO=[...STATES].sort((a,b)=>b['Online Rate %']-a['Online Rate %'])[0];
+  const tF=[...STATES].sort((a,b)=>b['Female Share %']-a['Female Share %'])[0];
+  const avgO=(STATES.reduce((s,x)=>s+x['Online Rate %'],0)/STATES.length).toFixed(1);
+  const avgF=(STATES.reduce((s,x)=>s+x['Female Share %'],0)/STATES.length).toFixed(1);
+  document.getElementById('insightPills').innerHTML=`
+    <div class="ip"><div class="il">Highest Online Rate</div><div class="iv">${tO['Online Rate %']}%</div><div class="is">${tO['State / UT']}</div></div>
+    <div class="ip"><div class="il">Avg Online Rate</div><div class="iv">${avgO}%</div><div class="is">Across all states</div></div>
+    <div class="ip"><div class="il">Highest Female Share</div><div class="iv">${tF['Female Share %']}%</div><div class="is">${tF['State / UT']}</div></div>
+    <div class="ip"><div class="il">Avg Female Share</div><div class="iv">${avgF}%</div><div class="is">Across all states</div></div>
+    <div class="ip"><div class="il">Most Schemes State</div><div class="iv">${STATES[0]['Total Schemes']}</div><div class="is">${STATES[0]['State / UT']}</div></div>
+    <div class="ip"><div class="il">States Tracked</div><div class="iv">${STATES.length}</div><div class="is">States &amp; UTs</div></div>
+  `;
+  const fS=[...STATES].sort((a,b)=>b['Female Share %']-a['Female Share %']);
+  barH('c_female',fS.map(s=>s['State / UT']),fS.map(s=>s['Female Share %']),'#f687b3',true);
+  const oS=[...STATES].sort((a,b)=>b['Online Rate %']-a['Online Rate %']);
+  mk('c_online','bar',oS.map(s=>s['State / UT']),[{label:'Online Rate %',data:oS.map(s=>s['Online Rate %']),
+    backgroundColor:oS.map(s=>s['Online Rate %']>30?'#68d391':s['Online Rate %']>15?'#f6ad55':'#fc8181'),borderRadius:4}],{
+    indexAxis:'y',plugins:{legend:{display:false}},
+    scales:{x:{ticks:{...XT,callback:v=>v+'%'},grid:XGRID},y:{ticks:{color:'#c0d0e0',font:{size:10}},grid:{display:false}}}
+  });
+  // Heatmap
+  const t10=STATES.slice(0,10);
+  const hc=['Agriculture','Education & Learning','Business & Entrepreneurship','Social welfare & Empowerment','Health & Wellness','Skills & Employment','Banking','Sports & Culture'];
+  const maxV=Math.max(...t10.flatMap(s=>{const r=CATS.find(x=>x['State / UT']===s['State / UT'])||{};return hc.map(c=>r[c]||0);}));
+  let html='<table><thead><tr><th>State</th>'+hc.map(c=>`<th style="font-size:10px;white-space:normal;max-width:80px">${c}</th>`).join('')+'</tr></thead><tbody>';
+  t10.forEach(s=>{
+    const r=CATS.find(x=>x['State / UT']===s['State / UT'])||{};
+    html+=`<tr><td class="left" style="font-weight:600;white-space:nowrap;font-size:12px">${s['State / UT']}</td>`;
+    hc.forEach(c=>{
+      const v=r[c]||0;const ratio=maxV>0?v/maxV:0;
+      const bg=`rgba(46,117,182,${ratio.toFixed(2)})`;const col=ratio>0.5?'#fff':'#8fa4bb';
+      html+=`<td style="background:${bg};color:${col};font-weight:${v>0?'600':'400'}">${v||''}</td>`;
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  document.getElementById('heatmap').innerHTML=html;
+}
+
+// ── ROUTER ──
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');el.classList.add('active');
+  if(id==='p2')initP2();
+  if(id==='p3')initP3();
+  if(id==='p4')initP4();
+}
+
+initP1();
+</script>
+</body>
+</html>
